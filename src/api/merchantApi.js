@@ -25,13 +25,13 @@ export async function getItems({ tailor } = {}) {
     const items = await localFetch('/api/items?tailor=true')
     return Array.isArray(items) ? items : items.items || []
   }
-  // Guest view calls the external API directly — no local Express server required
-  const items = await apiFetch(`/merchants/${MERCHANT_SLUG}/items`)
+  // Guest view calls local Express backend to display custom seeded items and local overrides!
+  const items = await localFetch('/api/items')
   return Array.isArray(items) ? items : items.items || []
 }
 
 export async function getItem(itemId) {
-  return apiFetch(`/merchants/${MERCHANT_SLUG}/items/${itemId}`)
+  return localFetch(`/api/items/${itemId}`)
 }
 
 export function payOrder(orderId, reference) {

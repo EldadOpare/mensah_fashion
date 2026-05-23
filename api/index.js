@@ -293,7 +293,7 @@ app.get('/api/items', async (req, res) => {
     })
     
     // Merge custom items
-    const merged = [...formattedExt, ...customItems]
+    const merged = [...customItems, ...formattedExt]
     
     // Filter to only published items unless the request comes from the tailor dashboard
     const isTailor = req.query.tailor === 'true'
