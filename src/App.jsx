@@ -42,6 +42,7 @@ export default function App() {
           <Route path="/basket/:id"   element={<BasketConfirmation />} />
 
           {/* Legacy redirects */}
+          <Route path="/tailor"          element={<Navigate to="/tailor/login" replace />} />
           <Route path="/order/:ref"      element={<Navigate to="/" replace />} />
           <Route path="/tailor/create"   element={<Navigate to="/tailor/campaign/create" replace />} />
 
