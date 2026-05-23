@@ -257,18 +257,31 @@ app.get('/api/items', async (req, res) => {
       
       // Map placeholder images to high-quality uploaded assets so they display beautifully!
       let mappedUrls = item.image_urls || []
-      if (item.id === 'as-dress-ankara') {
-        mappedUrls = ['/images/amina-stitches/ankara.webp']
-      } else if (item.id === 'as-dress-kente') {
-        mappedUrls = ['/images/amina-stitches/kente.jpg']
-      } else if (item.id === 'as-skirt-pencil') {
-        mappedUrls = ['/images/amina-stitches/pencil.avif']
-      } else if (item.id === 'as-skirt-maxi') {
-        mappedUrls = ['/images/amina-stitches/ankara.webp']
-      } else if (item.id === 'as-top-peplum') {
-        mappedUrls = ['/images/amina-stitches/blouse.avif']
-      } else if (item.id === 'as-bag-tote') {
-        mappedUrls = ['/images/amina-stitches/tote_bag.avif']
+      const imageMap = {
+        'as-dress-ankara': '/images/amina-stitches/ankara.webp',
+        'as-dress-kente': '/images/amina-stitches/kente.jpg',
+        'as-skirt-pencil': '/images/amina-stitches/pencil.avif',
+        'as-skirt-maxi': '/images/amina-stitches/ankara.webp',
+        'as-top-peplum': '/images/amina-stitches/blouse.avif',
+        'as-bag-tote': '/images/amina-stitches/tote_bag.avif',
+        'as-blazer-print': '/images/amina-stitches/blazer.jpg',
+        'as-coord-set': '/images/amina-stitches/2_peice.webp',
+        'as-kimono-cover': '/images/amina-stitches/cover_up.webp',
+        'as-wrap-dress': '/images/amina-stitches/2_peice.webp',
+        'as-gown-wedding': '/images/amina-stitches/kente.jpg',
+        'as-eid-dress': '/images/amina-stitches/ankara.webp',
+        'as-child-dress': '/images/amina-stitches/ankara.webp',
+        'as-jumpsuit-wide': '/images/amina-stitches/2_peice.webp',
+        'as-shorts-high': '/images/amina-stitches/pencil.avif',
+        'as-top-crop': '/images/amina-stitches/blouse.avif',
+        'as-headwrap-set': '/images/amina-stitches/pencil.avif',
+        'as-mask-set': '/images/amina-stitches/pencil.avif',
+        'as-earrings-fabric': '/images/amina-stitches/pencil.avif',
+        'as-scrunchie-pack': '/images/amina-stitches/pencil.avif',
+      }
+      const mapped = imageMap[item.id]
+      if (mapped) {
+        mappedUrls = [mapped]
       }
       
       return {
