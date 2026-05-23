@@ -254,10 +254,28 @@ app.get('/api/items', async (req, res) => {
       // Default to true (in stock) if not explicitly overridden, ensuring customer checkout is functional out of the box!
       const stock = stockOverrides[item.id] !== undefined ? stockOverrides[item.id] : true
       const visible = visibilityOverrides[item.id] !== undefined ? visibilityOverrides[item.id] : true
+      
+      // Map placeholder images to high-quality uploaded assets so they display beautifully!
+      let mappedUrls = item.image_urls || []
+      if (item.id === 'as-dress-ankara') {
+        mappedUrls = ['/images/amina-stitches/ankara.webp']
+      } else if (item.id === 'as-dress-kente') {
+        mappedUrls = ['/images/amina-stitches/kente.jpg']
+      } else if (item.id === 'as-skirt-pencil') {
+        mappedUrls = ['/images/amina-stitches/pencil.avif']
+      } else if (item.id === 'as-skirt-maxi') {
+        mappedUrls = ['/images/amina-stitches/ankara.webp']
+      } else if (item.id === 'as-top-peplum') {
+        mappedUrls = ['/images/amina-stitches/blouse.avif']
+      } else if (item.id === 'as-bag-tote') {
+        mappedUrls = ['/images/amina-stitches/tote_bag.avif']
+      }
+      
       return {
         ...item,
         in_stock: stock,
         published: visible,
+        image_urls: mappedUrls,
       }
     })
     
