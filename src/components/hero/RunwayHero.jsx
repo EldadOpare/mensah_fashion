@@ -16,7 +16,7 @@ const CSS = `
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 1s ease;
+  transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   pointer-events: none;
 }
 .rh-slide.rh-active {
@@ -27,8 +27,9 @@ const CSS = `
 .rh-slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  background: #151311; /* Luxury brand slate backdrop to frame full details */
 }
 
 /* Gradient overlay — heavier at bottom for text legibility */
@@ -223,7 +224,7 @@ export default function RunwayHero({ items = [] }) {
     if (items.length < 2 || paused) return
     timerRef.current = setTimeout(() => {
       setCur(c => (c + 1) % items.length)
-    }, 4800)
+    }, 3200) // Fast and dynamic high-fashion slide transition
     return () => clearTimeout(timerRef.current)
   }, [cur, items.length, paused])
 

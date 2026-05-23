@@ -28,12 +28,12 @@ export default function App() {
   }, [location.pathname])
 
   return (
-    <Suspense fallback={<MensahLoader />}>
+    <>
       <AnimatePresence mode="wait">
         {routeLoading && <MensahLoader key="route-loader" />}
       </AnimatePresence>
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
+      <Suspense fallback={<MensahLoader />}>
+        <Routes>
           {/* Guest */}
           <Route path="/"             element={<GuestHome />} />
           <Route path="/listing/:id"  element={<GuestViewer />} />
@@ -53,7 +53,7 @@ export default function App() {
           <Route path="/tailor/inventory"         element={<TailorInventory />} />
           <Route path="/tailor/analytics"         element={<TailorAnalytics />} />
         </Routes>
-      </AnimatePresence>
-    </Suspense>
+      </Suspense>
+    </>
   )
 }

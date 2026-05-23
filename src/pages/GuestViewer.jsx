@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
@@ -15,6 +15,25 @@ import { useCart } from '../context/CartContext'
 import { getItem } from '../api/merchantApi'
 import { mapItemToGarment } from '../utils/garmentMap'
 import { toAbsoluteUrl, formatPrice, openWhatsApp } from '../config/apiConfig'
+
+class ViewerErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true }
+  }
+  componentDidCatch(error, errorInfo) {
+    console.warn("GarmentViewer crashed, falling back to lookbook photo gallery:", error, errorInfo)
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback
+    }
+    return this.props.children
+  }
+}
 
 export default function GuestViewer() {
   const { id } = useParams()
@@ -111,20 +130,22 @@ export default function GuestViewer() {
             {/* Left — media */}
             <div>
               {item.displayMode === '3d' ? (
-                <div style={{
-                  borderRadius: 'var(--radius-md)',
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-color)',
-                  height: '620px',
-                  background: 'var(--bg-surface)',
-                }}>
-                  <GarmentViewer
-                    modelUrl={`/models/garments/${item.garmentId}.glb`}
-                    textureUrl={activeTexture}
-                    tintColor={tintColor}
-                    garmentId={item.garmentId}
-                  />
-                </div>
+                <ViewerErrorBoundary fallback={<PhotoGallery urls={imageUrls} />}>
+                  <div style={{
+                    borderRadius: 'var(--radius-md)',
+                    overflow: 'hidden',
+                    border: '1px solid var(--border-color)',
+                    height: '620px',
+                    background: 'var(--bg-surface)',
+                  }}>
+                    <GarmentViewer
+                      modelUrl={`/models/garments/${item.garmentId}.glb`}
+                      textureUrl={activeTexture}
+                      tintColor={tintColor}
+                      garmentId={item.garmentId}
+                    />
+                  </div>
+                </ViewerErrorBoundary>
               ) : (
                 <PhotoGallery urls={imageUrls} />
               )}
