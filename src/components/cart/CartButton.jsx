@@ -21,7 +21,7 @@ export default function CartButton({ onClick }) {
           background: 'var(--text-primary)',
           color: '#FFFFFF',
           fontSize: '10px',
-          fontWeight: 600,
+          fontWeight: 500,
           fontFamily: 'var(--font-sans)',
           minWidth: '18px',
           height: '18px',

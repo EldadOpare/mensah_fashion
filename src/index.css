@@ -213,6 +213,13 @@ label {
   margin-bottom: 6px;
 }
 
+/* ─── Marquee ────────────────────────────────────────── */
+
+@keyframes marquee {
+  from { transform: translateX(0) }
+  to   { transform: translateX(-50%) }
+}
+
 /* ─── Skeleton loader ────────────────────────────────── */
 
 @keyframes shimmer {
@@ -261,31 +268,10 @@ label {
 .status-ready       { color: #1a7a40; }
 .status-delivered   { color: #1a3f7a; }
 
-/* ─── Sidebar (tailor) ───────────────────────────────── */
 
-.sidebar-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  color: var(--text-secondary);
-  font-size: var(--text-sm);
-  border: 1.5px solid transparent;
-  transition: all 0.15s;
-}
+/* ─── Sidebar ─────────────────────────────────────────────
+   Styles now live in Sidebar.jsx (scoped).              */
 
-.sidebar-link:hover {
-  background: rgba(0,0,0,0.04);
-  color: var(--text-primary);
-}
-
-.sidebar-link.active {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
 
 /* ─── Dot grid (studio) ──────────────────────────────── */
 

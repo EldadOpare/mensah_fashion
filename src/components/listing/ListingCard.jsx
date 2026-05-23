@@ -10,6 +10,7 @@ const itemVariants = {
 
 export default function ListingCard({ item }) {
   const [hovered, setHovered] = useState(false)
+  const [imgFailed, setImgFailed] = useState(false)
 
   const { id, name, price_minor, currency = 'GHS', image_urls, in_stock, displayMode } = item
   const thumbnail = image_urls?.[0] ? toAbsoluteUrl(image_urls[0]) : null
@@ -30,11 +31,12 @@ export default function ListingCard({ item }) {
           background: 'var(--bg-surface)',
           borderRadius: 'var(--radius-md)',
         }}>
-          {thumbnail ? (
+          {thumbnail && !imgFailed ? (
             <img
               src={thumbnail}
               alt={name}
               loading="lazy"
+              onError={() => setImgFailed(true)}
               style={{
                 position: 'absolute', inset: 0,
                 width: '100%', height: '100%',
@@ -48,8 +50,11 @@ export default function ListingCard({ item }) {
             <div style={{
               position: 'absolute', inset: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--bg-surface)',
             }}>
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>No image</span>
+              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', letterSpacing: '0.08em', fontFamily: 'var(--font-editorial)', fontStyle: 'italic' }}>
+                {name}
+              </span>
             </div>
           )}
 
@@ -86,7 +91,7 @@ export default function ListingCard({ item }) {
               textTransform: 'uppercase',
               padding: '3px 8px',
               borderRadius: 'var(--radius-xs)',
-              fontWeight: 600,
+              fontWeight: 500,
             }}>
               3D
             </div>

@@ -11,6 +11,26 @@ const GarmentLoader = () => (
 )
 
 export default function GarmentViewer({ modelUrl, textureUrl, tintColor, garmentId }) {
+  // ─── Direct Fallback for Missing GLB files ────────────────────────
+  // Only 8 specific model files exist in public/models/garments/. 
+  // If the requested garmentId is not present, we fall back to a standard kaftan.glb
+  // to prevent 404 loading failures, blank canvases, and React Three Fiber crashes.
+  const EXISTING_GLBS = [
+    'kaftan',
+    'business_suit',
+    'jeans_baggy',
+    'shirt_long',
+    'shirt_skirt_outfit',
+    'shirt_vintage',
+    'skirt_medieval',
+    'waistcoat'
+  ]
+  
+  const isAvailable = EXISTING_GLBS.includes(garmentId)
+  const finalGarmentId = isAvailable ? garmentId : 'kaftan'
+  const finalModelUrl = isAvailable ? modelUrl : '/models/garments/kaftan.glb'
+  // ──────────────────────────────────────────────────────────────────
+
   return (
     <div style={{ width: '100%', height: '100%', minHeight: '500px', background: '#ffffff' }}>
       <Canvas shadows camera={{ position: [0, 0.3, 4], fov: 38 }}>
@@ -20,10 +40,10 @@ export default function GarmentViewer({ modelUrl, textureUrl, tintColor, garment
 
         <Suspense fallback={<GarmentLoader />}>
           <GarmentModel
-            url={modelUrl}
+            url={finalModelUrl}
             textureUrl={textureUrl}
             tint={tintColor}
-            garmentId={garmentId}
+            garmentId={finalGarmentId}
           />
         </Suspense>
 

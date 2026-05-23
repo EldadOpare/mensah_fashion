@@ -1,5 +1,5 @@
 const KEYWORD_MAP = [
-  { keywords: ['kaftan', 'agbada', 'boubou', 'dashiki'],        garmentId: 'kaftan' },
+  { keywords: ['kaftan', 'agbada', 'boubou', 'dashiki', 'dress', 'gown', 'midi'], garmentId: 'kaftan' },
   { keywords: ['wrap skirt', 'skirt', 'kente skirt'],           garmentId: 'skirt_medieval' },
   { keywords: ['shirt & skirt', 'outfit', 'set', 'coord'],      garmentId: 'shirt_skirt_outfit' },
   { keywords: ['vintage shirt', 'vintage'],                     garmentId: 'shirt_vintage' },
@@ -11,6 +11,18 @@ const KEYWORD_MAP = [
 
 export function mapItemToGarment(item) {
   if (!item) return { garmentId: null, displayMode: 'photo' }
+  
+  // If the item already has an explicit displayMode and garmentId set, respect it!
+  // This prevents custom tailor-configured 3D garments from being forcefully overwritten to photo mode
+  if (item.displayMode === '3d' && item.garmentId) {
+    return { garmentId: item.garmentId, displayMode: '3d' }
+  }
+  
+  // If the item explicitly has displayMode set as photo, respect it!
+  if (item.displayMode === 'photo') {
+    return { garmentId: null, displayMode: 'photo' }
+  }
+
   const name = (item.name || '').toLowerCase()
   const description = (item.description || '').toLowerCase()
   const text = `${name} ${description}`

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../../context/CartContext'
 import CheckoutForm from './CheckoutForm'
-import { toAbsoluteUrl, formatPrice } from '../../config/apiConfig'
+import { formatPrice } from '../../config/apiConfig'
 
 function QtyControl({ qty, onDecrement, onIncrement }) {
   return (
@@ -169,7 +169,7 @@ export default function CartDrawer({ isOpen, onClose }) {
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
                   <span style={{ fontFamily: 'var(--font-sans)', fontSize: 'var(--text-base)' }}>Subtotal</span>
-                  <span style={{ fontWeight: 600, fontSize: 'var(--text-base)' }}>
+                  <span style={{ fontWeight: 500, fontSize: 'var(--text-base)' }}>
                     {formatPrice(totalMinor, items[0]?.currency || 'GHS')}
                   </span>
                 </div>

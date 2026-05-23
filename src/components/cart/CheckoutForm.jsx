@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
-import { createBasket } from '../../api/merchantApi'
-import { formatPrice } from '../../config/apiConfig'
+import { createBasket, createOrder } from '../../api/merchantApi'
+import { formatPrice, openWhatsApp } from '../../config/apiConfig'
 
 const MEASUREMENT_FIELDS = ['chest', 'waist', 'hips', 'length', 'sleeve']
 
@@ -56,10 +56,70 @@ export default function CheckoutForm({ onBack }) {
       }
 
       const result = await createBasket(payload)
+      // Save order locally for tailor's dashboard
+      try {
+        await createOrder({
+          basket_id: result.id,
+          customer_name: form.name.trim(),
+          customer_phone: form.phone.trim(),
+          customer_note: buildCustomerNote(),
+          items: items.map(i => ({
+            name: i.name,
+            qty: i.qty,
+            price_minor: i.price_minor,
+            currency: i.currency || 'GHS',
+          })),
+          total_minor: totalMinor,
+          currency: items[0]?.currency || 'GHS',
+        })
+      } catch (orderErr) {
+        console.error('Failed to save order locally:', orderErr)
+      }
       clearCart()
       navigate(`/basket/${result.id}`)
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.')
+      // If the API rejects (e.g. items out of stock), fall back to direct WhatsApp
+      if (err.code === 'items_unavailable' || err.status === 422 || err.status === 400) {
+        const lines = [
+          `*New Order — Mensah*`,
+          ``,
+          `*Items:*`,
+          ...items.map(i => `• ${i.name} × ${i.qty} — ${formatPrice(i.price_minor * i.qty, i.currency)}`),
+          ``,
+          `*Total: ${formatPrice(totalMinor, items[0]?.currency || 'GHS')}*`,
+          ``,
+          `*Name:* ${form.name.trim()}`,
+          `*Phone:* ${form.phone.trim()}`,
+          `*Delivery:* ${form.address.trim()}`,
+          form.notes ? `*Notes:* ${form.notes.trim()}` : '',
+        ].filter(Boolean).join('\n')
+
+        // Save order locally for tailor's dashboard even during fallback
+        try {
+          await createOrder({
+            basket_id: null,
+            customer_name: form.name.trim(),
+            customer_phone: form.phone.trim(),
+            customer_note: buildCustomerNote(),
+            items: items.map(i => ({
+              name: i.name,
+              qty: i.qty,
+              price_minor: i.price_minor,
+              currency: i.currency || 'GHS',
+            })),
+            total_minor: totalMinor,
+            currency: items[0]?.currency || 'GHS',
+          })
+        } catch (orderErr) {
+          console.error('Failed to save fallback order locally:', orderErr)
+        }
+
+        clearCart()
+        openWhatsApp(lines)
+        navigate('/')
+      } else {
+        setError(err.message || 'Something went wrong. Please try again.')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -83,7 +143,7 @@ export default function CheckoutForm({ onBack }) {
         <div style={{ height: '1px', background: 'var(--border-color)', margin: 'var(--space-3) 0' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ fontWeight: 500 }}>Total</span>
-          <span style={{ fontWeight: 600 }}>{formatPrice(totalMinor, items[0]?.currency || 'GHS')}</span>
+          <span style={{ fontWeight: 500 }}>{formatPrice(totalMinor, items[0]?.currency || 'GHS')}</span>
         </div>
       </div>
 

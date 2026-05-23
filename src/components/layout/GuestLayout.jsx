@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useState } from 'react'
-import mensahLogo from '../../assets/Mensah_Logo.png'
+const mensahLogo = '/icons/Mensah_Logo.png'
 import CartButton from '../cart/CartButton'
 import CartDrawer from '../cart/CartDrawer'
 

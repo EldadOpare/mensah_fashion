@@ -19,12 +19,26 @@ export function getMerchant() {
   return apiFetch(`/merchants/${MERCHANT_SLUG}`)
 }
 
-export function getItems() {
-  return apiFetch(`/merchants/${MERCHANT_SLUG}/items`)
+export async function getItems({ tailor } = {}) {
+  if (tailor) {
+    // Tailor view goes through local Express — includes stock/visibility overrides + custom items
+    const items = await localFetch('/api/items?tailor=true')
+    return Array.isArray(items) ? items : items.items || []
+  }
+  // Guest view calls the external API directly — no local Express server required
+  const items = await apiFetch(`/merchants/${MERCHANT_SLUG}/items`)
+  return Array.isArray(items) ? items : items.items || []
 }
 
-export function getItem(itemId) {
-  return apiFetch(`/items/${itemId}`)
+export async function getItem(itemId) {
+  return apiFetch(`/merchants/${MERCHANT_SLUG}/items/${itemId}`)
+}
+
+export function payOrder(orderId, reference) {
+  return localFetch(`/api/orders/${orderId}/pay`, {
+    method: 'PUT',
+    body: JSON.stringify({ reference }),
+  })
 }
 
 export function getMerchantCampaigns() {
@@ -75,3 +89,63 @@ export async function registerTeam({ name, contact } = {}) {
     throw err
   }
 }
+
+// ─── Orders (local API) ───────────────────────────────────────────────
+async function localFetch(path, options = {}) {
+  const res = await fetch(path, {
+    headers: { 'Content-Type': 'application/json', ...options.headers },
+    credentials: 'include',
+    ...options,
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    const err = new Error(body.error || `API error ${res.status}`)
+    err.status = res.status
+    throw err
+  }
+  return res.json()
+}
+
+export function getMerchantOrders() {
+  return localFetch('/api/orders')
+}
+
+export function updateOrderStatus(orderId, status) {
+  return localFetch(`/api/orders/${orderId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  })
+}
+
+export function createOrder(payload) {
+  return localFetch('/api/orders', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function getBasketOrder(basketId) {
+  return localFetch(`/api/orders/basket/${basketId}`)
+}
+
+export function createItem(payload) {
+  return localFetch('/api/items', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function toggleItemStock(itemId, inStock) {
+  return localFetch(`/api/items/${itemId}/stock`, {
+    method: 'PUT',
+    body: JSON.stringify({ in_stock: inStock }),
+  })
+}
+
+export function toggleItemVisibility(itemId, published) {
+  return localFetch(`/api/items/${itemId}/visibility`, {
+    method: 'PUT',
+    body: JSON.stringify({ published }),
+  })
+}
+

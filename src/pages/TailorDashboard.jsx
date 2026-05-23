@@ -5,33 +5,271 @@ import AppLayout from '../components/layout/AppLayout'
 import { getMerchantCampaigns, registerTeam } from '../api/merchantApi'
 import { toAbsoluteUrl } from '../config/apiConfig'
 
-function StatCard({ value, label, color }) {
+const CSS = `
+/* ── Stat cards ──────────────────────────────────────────── */
+.td-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.td-stat {
+  background: #FFFFFF;
+  border: 1px solid #F0F0F0;
+  border-radius: 10px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.td-stat-value {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1;
+}
+
+.td-stat-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #AAAAAA;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ── Section header ─────────────────────────────────────── */
+.td-section-hd {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.td-section-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #BBBBBB;
+  margin-bottom: 4px;
+}
+
+.td-section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 1.1;
+}
+
+/* ── Campaign grid ──────────────────────────────────────── */
+.td-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.td-card {
+  background: #FFFFFF;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #F0F0F0;
+  transition: box-shadow 0.18s, transform 0.18s;
+  cursor: pointer;
+}
+
+.td-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.td-card-img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+  background: #F5F5F5;
+}
+
+.td-card-img-placeholder {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: #F5F5F5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #CCCCCC;
+  text-transform: uppercase;
+}
+
+.td-card-body {
+  padding: 12px 14px 14px;
+}
+
+.td-card-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111111;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.td-card-meta {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: #AAAAAA;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.td-card-view {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: #3D3D3D;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 3px 8px;
+  border: 1px solid rgba(61,61,61,0.25);
+  border-radius: 4px;
+  transition: background 0.12s;
+}
+.td-card-view:hover { background: rgba(61,61,61,0.06); }
+
+/* ── Empty state ─────────────────────────────────────────── */
+.td-empty {
+  text-align: center;
+  padding: 80px 40px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px dashed #E0E0E0;
+}
+.td-empty-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #111111;
+  margin-bottom: 8px;
+}
+.td-empty-sub {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  color: #AAAAAA;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.td-new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #3D3D3D;
+  color: #FFFFFF;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.td-new-btn:hover { background: #2A2A2A; }
+
+/* ── Hackathon section ───────────────────────────────────── */
+.td-hackathon {
+  margin-top: 32px;
+  background: #FFFFFF;
+  border: 1px solid #F0F0F0;
+  border-radius: 10px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.td-hack-title {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111111;
+  margin-bottom: 3px;
+}
+.td-hack-sub {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: #AAAAAA;
+  line-height: 1.5;
+}
+.td-hack-btn {
+  flex-shrink: 0;
+  background: transparent;
+  color: #111111;
+  border: 1px solid #DDDDDD;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.td-hack-btn:hover:not(:disabled) { background: #F5F5F5; border-color: #CCCCCC; }
+.td-hack-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Filter tabs ─────────────────────────────────────────── */
+.td-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.td-filter-tab {
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #999999;
+  background: transparent;
+  transition: all 0.12s;
+  letter-spacing: 0.02em;
+}
+.td-filter-tab:hover { color: #111111; }
+.td-filter-tab.active { background: #3D3D3D; color: #FFFFFF; border-color: #3D3D3D; }
+`
+
+function StatCard({ value, label }) {
   return (
-    <div style={{
-      background: '#FFF',
-      border: '1px solid var(--border-color)',
-      borderRadius: 'var(--radius-md)',
-      padding: 'var(--space-6)',
-    }}>
-      <div style={{
-        width: 36, height: 36,
-        borderRadius: 'var(--radius-sm)',
-        background: color + '22',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: 'var(--space-4)',
-      }}>
-        <span style={{ width: 12, height: 12, borderRadius: '50%', background: color, display: 'inline-block' }} />
-      </div>
-      <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 500, color: 'var(--text-primary)', marginBottom: 4 }}>{value}</div>
-      <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>{label}</div>
+    <div className="td-stat">
+      <div className="td-stat-value">{value}</div>
+      <div className="td-stat-label">{label}</div>
     </div>
   )
 }
 
+const FILTERS = ['All', 'Active', 'Draft', 'Archived']
+
 export default function TailorDashboard() {
   const [campaigns, setCampaigns] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]     = useState(true)
   const [teamStatus, setTeamStatus] = useState(null)
+  const [activeFilter, setActiveFilter] = useState('All')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -59,153 +297,136 @@ export default function TailorDashboard() {
     }
   }
 
-  return (
-    <AppLayout userType="tailor" onLogout={handleLogout}>
-      {/* Stats */}
-      <div style={{
-        padding: 'var(--space-7) var(--space-7) var(--space-6)',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 'var(--space-5)',
-      }}>
-        <StatCard
-          value={loading ? '—' : campaigns.length}
-          label="Campaigns"
-          color="#4DA8DA"
-        />
-        <StatCard
-          value={loading ? '—' : campaigns.filter(c => c.image_urls?.length > 0).length}
-          label="With Images"
-          color="#80D8C3"
-        />
-        <StatCard
-          value={loading ? '—' : campaigns.reduce((sum, c) => sum + (c.featured_items?.length || 0), 0)}
-          label="Items Featured"
-          color="#FFD66B"
-        />
-      </div>
+  const topbarLeft = (
+    <div className="app-topbar-pill" style={{ background: 'transparent', border: '1px solid #EEEEEE' }}>
+      Campaigns
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <polyline points="6,9 12,15 18,9"/>
+      </svg>
+    </div>
+  )
 
-      {/* Campaigns section */}
-      <div style={{ padding: '0 var(--space-7) var(--space-7)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-5)' }}>
-          <div>
-            <p className="label" style={{ marginBottom: 'var(--space-2)' }}>Studio</p>
-            <h2 style={{ fontFamily: 'var(--font-editorial)', fontSize: 'var(--text-xl)', fontWeight: 400 }}>Campaigns</h2>
-          </div>
-          <Link to="/tailor/campaign/create">
-            <button style={{ fontSize: 'var(--text-sm)', padding: '10px 18px' }}>+ New Campaign</button>
-          </Link>
+  const topbarRight = (
+    <Link to="/tailor/campaign/create" className="app-topbar-action">
+      + New Campaign
+    </Link>
+  )
+
+  return (
+    <>
+      <style>{CSS}</style>
+      <AppLayout userType="tailor" onLogout={handleLogout} topbarLeft={topbarLeft} topbarRight={topbarRight}>
+
+        {/* Stats row */}
+        <div className="td-stats">
+          <StatCard value={loading ? '—' : campaigns.length}                                                         label="Campaigns" />
+          <StatCard value={loading ? '—' : campaigns.filter(c => c.image_urls?.length > 0).length}                   label="With Images" />
+          <StatCard value={loading ? '—' : campaigns.reduce((s, c) => s + (c.featured_items?.length || 0), 0)}       label="Items Featured" />
         </div>
 
+        {/* Section header */}
+        <div className="td-section-hd">
+          <div>
+            <div className="td-section-label">Studio</div>
+            <div className="td-section-title">Campaigns</div>
+          </div>
+        </div>
+
+        {/* Filter tabs */}
+        <div className="td-filter-row">
+          {FILTERS.map(f => (
+            <button
+              key={f}
+              className={`td-filter-tab${activeFilter === f ? ' active' : ''}`}
+              onClick={() => setActiveFilter(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        {/* Campaign grid */}
         {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--space-5)' }}>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="skeleton" style={{ height: 220, borderRadius: 'var(--radius-md)' }} />
+          <div className="td-grid">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="td-card">
+                <div className="skeleton" style={{ aspectRatio: '3/4', width: '100%' }} />
+                <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div className="skeleton" style={{ height: 13, width: '70%', borderRadius: 4 }} />
+                  <div className="skeleton" style={{ height: 11, width: '40%', borderRadius: 4 }} />
+                </div>
+              </div>
             ))}
           </div>
         ) : campaigns.length === 0 ? (
-          <div style={{ padding: 'var(--space-9)', textAlign: 'center', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
-              No campaigns yet. Publish your first drop to share with customers.
+          <div className="td-empty">
+            <div className="td-empty-title">No campaigns yet</div>
+            <p className="td-empty-sub">
+              Publish your first drop to share your bespoke<br/>pieces with customers.
             </p>
-            <Link to="/tailor/campaign/create">
-              <button>Create Your First Campaign</button>
+            <Link to="/tailor/campaign/create" className="td-new-btn">
+              + Create Campaign
             </Link>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--space-5)' }}>
-            {campaigns.map(campaign => {
+          <motion.div
+            className="td-grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.04 }}
+          >
+            {campaigns.map((campaign, i) => {
               const cover = campaign.image_urls?.[0] ? toAbsoluteUrl(campaign.image_urls[0]) : null
               return (
                 <motion.div
                   key={campaign.id}
-                  whileHover={{ y: -2 }}
-                  transition={{ duration: 0.2 }}
-                  style={{
-                    background: 'white',
-                    borderRadius: 'var(--radius-md)',
-                    overflow: 'hidden',
-                    border: '1px solid var(--border-color)',
-                  }}
+                  className="td-card"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
                 >
-                  <div style={{ height: 160, background: 'var(--bg-surface)', overflow: 'hidden' }}>
-                    {cover ? (
-                      <img src={cover} alt={campaign.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{
-                        width: '100%', height: '100%',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--text-muted)', fontSize: 'var(--text-xs)', letterSpacing: '0.06em',
-                      }}>
-                        NO IMAGE
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ padding: 'var(--space-4)' }}>
-                    <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: 'var(--text-base)', fontWeight: 400, marginBottom: 'var(--space-1)' }}>
-                      {campaign.title}
-                    </h3>
-                    {campaign.copy_text && (
-                      <p style={{
-                        fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', lineHeight: 1.5,
-                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                        marginBottom: 'var(--space-3)',
-                      }}>
-                        {campaign.copy_text}
-                      </p>
-                    )}
-                    <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
-                      {campaign.featured_items?.length > 0 && (
-                        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                          {campaign.featured_items.length} items
-                        </span>
-                      )}
-                      <Link to={`/campaign/${campaign.id}`} style={{ marginLeft: 'auto' }}>
-                        <button className="secondary" style={{ fontSize: 'var(--text-xs)', padding: '6px 12px' }}>View</button>
-                      </Link>
+                  {cover ? (
+                    <img src={cover} alt={campaign.title} className="td-card-img" />
+                  ) : (
+                    <div className="td-card-img-placeholder">No image</div>
+                  )}
+                  <div className="td-card-body">
+                    <div className="td-card-title">{campaign.title}</div>
+                    <div className="td-card-meta">
+                      <span>{campaign.featured_items?.length || 0} items</span>
+                      <Link to={`/campaign/${campaign.id}`} className="td-card-view">View →</Link>
                     </div>
                   </div>
                 </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         )}
-      </div>
 
-      <div style={{ margin: '0 var(--space-7)', borderTop: '1px solid var(--border-color)' }} />
-
-      {/* Team registration */}
-      <div style={{ padding: 'var(--space-6) var(--space-7) var(--space-8)' }}>
-        <p className="label" style={{ marginBottom: 'var(--space-3)' }}>Hackathon</p>
-        <div style={{
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border-color)',
-          borderRadius: 'var(--radius-md)',
-          padding: 'var(--space-5)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)',
-        }}>
+        {/* Team registration */}
+        <div className="td-hackathon">
           <div>
-            <p style={{ fontWeight: 500, marginBottom: 4 }}>Team Registration</p>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+            <div className="td-hack-title">Team Registration</div>
+            <div className="td-hack-sub">
               Register <strong>mensah-app</strong> with the hackathon API. Safe to run multiple times.
-            </p>
+            </div>
             {teamStatus === 'success' && (
-              <p style={{ fontSize: 'var(--text-xs)', color: '#22a06b', marginTop: 6 }}>✓ Team registered successfully</p>
+              <p style={{ fontSize: 11, color: '#22a06b', marginTop: 4, fontFamily: 'Inter, system-ui, sans-serif' }}>✓ Team registered successfully</p>
             )}
             {teamStatus === 'error' && (
-              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--error)', marginTop: 6 }}>Registration failed — check console</p>
+              <p style={{ fontSize: 11, color: '#CC0000', marginTop: 4, fontFamily: 'Inter, system-ui, sans-serif' }}>Registration failed — check console</p>
             )}
           </div>
           <button
-            className="secondary"
+            className="td-hack-btn"
             onClick={handleRegisterTeam}
             disabled={teamStatus === 'loading' || teamStatus === 'success'}
-            style={{ flexShrink: 0, fontSize: 'var(--text-sm)', padding: '10px 16px' }}
           >
             {teamStatus === 'loading' ? 'Registering…' : teamStatus === 'success' ? '✓ Done' : 'Register Team'}
           </button>
         </div>
-      </div>
-    </AppLayout>
+
+      </AppLayout>
+    </>
   )
 }

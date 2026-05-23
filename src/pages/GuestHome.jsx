@@ -2,14 +2,13 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import GuestLayout from '../components/layout/GuestLayout'
-import HeroSequence from '../components/hero/HeroSequence'
+import RunwayHero from '../components/hero/RunwayHero'
 import ListingCard from '../components/listing/ListingCard'
-import MerchantBanner from '../components/merchant/MerchantBanner'
 import CampaignFeed from '../components/campaign/CampaignFeed'
-import { getItems, getMerchant, getMerchantCampaigns } from '../api/merchantApi'
+import TestimonialsSection from '../components/home/TestimonialsSection'
+import { getItems, getMerchantCampaigns } from '../api/merchantApi'
 import { mapItemToGarment } from '../utils/garmentMap'
-
-let heroPlayed = false
+import { toAbsoluteUrl } from '../config/apiConfig'
 
 const FILTERS = [
   { id: 'all',      label: 'All Pieces' },
@@ -22,6 +21,15 @@ const MOCK_ITEMS = [
   { id: 'mock-2', name: 'Kente Kaftan', price_minor: 85000, currency: 'GHS', image_urls: [], in_stock: true, displayMode: '3d' },
   { id: 'mock-3', name: 'Print Blouse', price_minor: 22000, currency: 'GHS', image_urls: [], in_stock: false, displayMode: 'photo' },
 ]
+
+const FALLBACK_CATEGORIES = [
+  { label: 'Kaftans' },
+  { label: 'Wrap Dresses' },
+  { label: 'Sets & Coords' },
+  { label: 'Blouses & Tops' },
+  { label: '3D Pieces' },
+]
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -63,39 +71,40 @@ function ItemSkeleton() {
   )
 }
 
+function deriveCategories(items) {
+  const rules = [
+    { label: 'Kaftans',        match: i => /kaftan|agbada|boubou|dashiki/i.test(i.name) },
+    { label: 'Dresses & Gowns', match: i => /dress|gown/i.test(i.name) },
+    { label: 'Sets & Coords',  match: i => /set|coord|outfit/i.test(i.name) },
+    { label: 'Blouses & Tops', match: i => /blouse|top/i.test(i.name) },
+    { label: '3D Pieces',      match: i => i.displayMode === '3d' },
+  ]
+  return rules.map(r => ({ label: r.label, count: items.filter(r.match).length })).filter(c => c.count > 0)
+}
+
 export default function GuestHome() {
-  const [showHero, setShowHero] = useState(!heroPlayed)
   const [items, setItems] = useState([])
-  const [merchant, setMerchant] = useState(null)
   const [campaigns, setCampaigns] = useState([])
   const [loading, setLoading] = useState(true)
   const [usingFallback, setUsingFallback] = useState(false)
   const [filter, setFilter] = useState('all')
 
-  useEffect(() => {
-    loadAll()
-  }, [])
+  useEffect(() => { loadAll() }, [])
 
   async function loadAll() {
     try {
-      const [rawItems, merchantData, campaignData] = await Promise.allSettled([
+      const [rawItems, campaignData] = await Promise.allSettled([
         getItems(),
-        getMerchant(),
         getMerchantCampaigns(),
       ])
 
       if (rawItems.status === 'fulfilled') {
-        const enriched = rawItems.value.map(item => ({
-          ...item,
-          ...mapItemToGarment(item),
-        }))
-        setItems(enriched)
+        setItems(rawItems.value.map(item => ({ ...item, ...mapItemToGarment(item) })))
       } else {
         setItems(MOCK_ITEMS)
         setUsingFallback(true)
       }
 
-      if (merchantData.status === 'fulfilled') setMerchant(merchantData.value)
       if (campaignData.status === 'fulfilled') setCampaigns(campaignData.value)
     } finally {
       setLoading(false)
@@ -108,19 +117,129 @@ export default function GuestHome() {
     return true
   })
 
+  const heroItems = (() => {
+    const from = campaigns[0]?.featured_items?.slice(0, 3)
+    if (from?.length) return from
+    const inStock = items.filter(i => i.in_stock)
+    return (inStock.length ? inStock : items).slice(0, 3)
+  })()
+
+  const categories = items.length ? deriveCategories(items) : FALLBACK_CATEGORIES
+
   return (
     <>
       <Helmet>
         <title>Mensah — Bespoke West African Fashion</title>
       </Helmet>
 
-      {showHero && <HeroSequence onComplete={() => { heroPlayed = true; setShowHero(false) }} />}
-
       <GuestLayout>
-        <MerchantBanner merchant={merchant} loading={loading && !merchant} />
 
+        {/* ── Hero ─────────────────────────────────── */}
+        <RunwayHero items={heroItems} />
+
+        {/* ── Campaigns ─────────────────────────────── */}
+        {campaigns.length > 0 && <CampaignFeed campaigns={campaigns} />}
+
+        {/* ── Category index ────────────────────────── */}
+        {(() => {
+          const cats = categories.length ? categories : FALLBACK_CATEGORIES
+          const maxCount = Math.max(...cats.map(c => c.count || 0), 1)
+          const featuredItem = items.find(i => i.image_urls?.[0])
+          const featuredImg = featuredItem?.image_urls?.[0] ? toAbsoluteUrl(featuredItem.image_urls[0]) : null
+
+          return (
+            <section style={{ borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+              <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'grid', gridTemplateColumns: '5fr 7fr', minHeight: '480px' }}>
+
+                {/* Left: featured item image + text */}
+                <div style={{ position: 'relative', overflow: 'hidden', borderRight: '1px solid var(--border-color)' }}>
+                  {featuredImg ? (
+                    <img
+                      src={featuredImg}
+                      alt={featuredItem?.name || ''}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: '480px' }}
+                      onError={e => { e.currentTarget.style.display = 'none' }}
+                    />
+                  ) : (
+                    <div style={{ width: '100%', minHeight: '480px', background: 'var(--bg-surface)' }} />
+                  )}
+                  {/* Overlay text */}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 'var(--space-6)', background: 'linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 100%)' }}>
+                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.65, maxWidth: '300px', marginBottom: 'var(--space-4)' }}>
+                      Every piece carries rhythm beyond clothing — its motion and meaning, where West African craft meets the moment.
+                    </p>
+                    <button
+                      onClick={() => document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="secondary"
+                      style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '9px 20px', borderRadius: 'var(--radius-full)' }}
+                    >
+                      See Collection →
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right: right-aligned numbered categories, size ∝ count */}
+                <div style={{ padding: 'var(--space-7) var(--space-6)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  {cats.map((cat, i) => {
+                    const ratio = (cat.count || 0) / maxCount
+                    // font size: 14px → 52px based on count ratio; fallback uses bell-curve index
+                    const fallbackRatio = [0.3, 0.6, 1, 0.6, 0.3][i] ?? 0.5
+                    const r = cat.count ? ratio : fallbackRatio
+                    const fs = Math.round(14 + r * 38)
+                    const isLarge = r > 0.6
+                    return (
+                      <button
+                        key={cat.label}
+                        onClick={() => {
+                          setFilter('all')
+                          document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'baseline',
+                          justifyContent: 'flex-end',
+                          gap: 'var(--space-3)',
+                          width: '100%',
+                          background: 'none',
+                          border: 'none',
+                          borderBottom: '1px solid var(--border-color)',
+                          padding: 'var(--space-2) 0',
+                          cursor: 'pointer',
+                          textAlign: 'right',
+                          color: isLarge ? 'var(--text-primary)' : 'var(--text-secondary)',
+                          transition: 'color 0.15s',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+                        onMouseLeave={e => e.currentTarget.style.color = isLarge ? 'var(--text-primary)' : 'var(--text-secondary)'}
+                      >
+                        <span style={{ fontSize: '10px', letterSpacing: '0.12em', color: 'var(--text-muted)', fontWeight: 400, alignSelf: 'center', marginRight: 'auto' }}>
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-sans)', fontSize: `${fs}px`, fontWeight: isLarge ? 500 : 400, lineHeight: 1.1, letterSpacing: isLarge ? '-0.02em' : '0' }}>
+                          {cat.label}
+                        </span>
+                        {cat.count > 0 && (
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', alignSelf: 'center', marginLeft: '6px' }}>
+                            ({cat.count})
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
+                  <div style={{ paddingTop: 'var(--space-3)', textAlign: 'right' }}>
+                    <span style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                      [Categories]
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )
+        })()}
+
+        {/* ── Fallback notice ────────────────────────── */}
         {usingFallback && (
-          <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 var(--space-6) var(--space-3)' }}>
+          <div style={{ maxWidth: '1440px', margin: '0 auto', padding: 'var(--space-4) var(--space-6) 0' }}>
             <p style={{
               fontSize: 'var(--text-xs)',
               color: 'var(--text-muted)',
@@ -134,9 +253,8 @@ export default function GuestHome() {
           </div>
         )}
 
-        {campaigns.length > 0 && <CampaignFeed campaigns={campaigns} />}
-
-        <section style={{ maxWidth: '1440px', margin: '0 auto', padding: 'var(--space-6) var(--space-6) var(--space-9)' }}>
+        {/* ── Collection grid ────────────────────────── */}
+        <section id="collection" style={{ maxWidth: '1440px', margin: '0 auto', padding: 'var(--space-7) var(--space-6) var(--space-9)' }}>
           <div style={{
             display: 'flex',
             alignItems: 'flex-end',
@@ -146,9 +264,16 @@ export default function GuestHome() {
             marginBottom: 'var(--space-6)',
           }}>
             <div>
-              <p className="label" style={{ marginBottom: 'var(--space-2)' }}>The Collection</p>
-              <h2 style={{ fontFamily: 'var(--font-editorial)', fontSize: 'var(--text-xl)', fontWeight: 400 }}>
-                All Pieces
+              <p style={{ fontSize: 'var(--text-xs)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 'var(--space-2)', fontWeight: 400 }}>
+                // The Collection
+              </p>
+              <h2 style={{
+                fontFamily: 'var(--font-editorial)',
+                fontSize: 'clamp(var(--text-2xl), 4vw, var(--text-3xl))',
+                fontWeight: 400,
+                lineHeight: 1.1,
+              }}>
+                {loading ? 'All Pieces' : `All Pieces (${filtered.length})`}
               </h2>
             </div>
             <FilterBar active={filter} onChange={setFilter} />
@@ -180,6 +305,10 @@ export default function GuestHome() {
             </motion.div>
           )}
         </section>
+
+        {/* ── Testimonials ───────────────────────────── */}
+        <TestimonialsSection />
+
       </GuestLayout>
     </>
   )

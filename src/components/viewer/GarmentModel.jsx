@@ -32,6 +32,8 @@ export default function GarmentModel({ url, textureUrl, tint, garmentId }) {
     const config = garmentConfig[garmentId] || { repeatX: 1, repeatY: 1, wrapS: 'RepeatWrapping', wrapT: 'RepeatWrapping' }
 
     if (textureUrl && texture) {
+      // Map colors to vibrant sRGB space for accurate display
+      texture.colorSpace = THREE.SRGBColorSpace || 'srgb'
       texture.wrapS = THREE[config.wrapS] || THREE.RepeatWrapping
       texture.wrapT = THREE[config.wrapT] || THREE.RepeatWrapping
       texture.repeat.set(config.repeatX, config.repeatY)
@@ -41,12 +43,16 @@ export default function GarmentModel({ url, textureUrl, tint, garmentId }) {
     scene.traverse((child) => {
       if (!child.isMesh) return
 
+      child.material = child.material.clone()
+      
+      // Configure realistic matte fabric material properties (soft finish, no metallic shine)
+      child.material.roughness = 0.85
+      child.material.metalness = 0.05
+
       if (textureUrl && texture) {
-        child.material = child.material.clone()
         child.material.map = texture
         child.material.color.set(tint || '#ffffff')
       } else {
-        child.material = child.material.clone()
         child.material.map = null
         child.material.color.set(tint || '#eeeeee')
       }
