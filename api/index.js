@@ -18,10 +18,17 @@ const allowed = [
   'http://localhost:5173',
   'http://localhost:3000',
   process.env.FRONTEND_URL,
+  'https://mensah-fashion.vercel.app',
 ].filter(Boolean)
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, cb) => {
+    // Allow all origins in development for easier testing
+    if (process.env.NODE_ENV !== 'production') {
+      cb(null, true)
+      return
+    }
+    // Production: restrict to allowed list and Vercel subdomains
     let isVercel = false
     try {
       if (origin) {
@@ -37,7 +44,8 @@ app.use(cors({
     }
   },
   credentials: true,
-}))
+}
+app.use(cors(corsOptions))
 
 app.use(express.json())
 app.use(cookieParser())
