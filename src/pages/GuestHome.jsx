@@ -6,6 +6,7 @@ import RunwayHero from '../components/hero/RunwayHero'
 import ListingCard from '../components/listing/ListingCard'
 import CampaignFeed from '../components/campaign/CampaignFeed'
 import TestimonialsSection from '../components/home/TestimonialsSection'
+import MensahLoader from '../components/ui/MensahLoader'
 import { getItems, getMerchantCampaigns } from '../api/merchantApi'
 import { mapItemToGarment } from '../utils/garmentMap'
 import { toAbsoluteUrl } from '../config/apiConfig'
@@ -92,6 +93,7 @@ export default function GuestHome() {
   useEffect(() => { loadAll() }, [])
 
   async function loadAll() {
+    const startTime = Date.now()
     try {
       const [rawItems, campaignData] = await Promise.allSettled([
         getItems(),
@@ -107,7 +109,11 @@ export default function GuestHome() {
 
       if (campaignData.status === 'fulfilled') setCampaigns(campaignData.value)
     } finally {
-      setLoading(false)
+      const elapsed = Date.now() - startTime
+      const remaining = Math.max(1800 - elapsed, 0)
+      setTimeout(() => {
+        setLoading(false)
+      }, remaining)
     }
   }
 
@@ -125,6 +131,8 @@ export default function GuestHome() {
   })()
 
   const categories = items.length ? deriveCategories(items) : FALLBACK_CATEGORIES
+
+  if (loading) return <MensahLoader />
 
   return (
     <>

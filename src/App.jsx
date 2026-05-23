@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import MensahLoader from './components/ui/MensahLoader'
 
 const GuestHome           = lazy(() => import('./pages/GuestHome'))
 const GuestViewer         = lazy(() => import('./pages/GuestViewer'))
@@ -18,7 +19,7 @@ export default function App() {
   const location = useLocation()
 
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }} />}>
+    <Suspense fallback={<MensahLoader />}>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* Guest */}

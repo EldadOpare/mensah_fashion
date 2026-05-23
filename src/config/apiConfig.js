@@ -9,8 +9,7 @@ export function toAbsoluteUrl(relativeUrl) {
   if (!relativeUrl) return null
   if (relativeUrl.startsWith('http')) return relativeUrl
   
-  // Local static files should be loaded relative to the website host (same-origin), 
-  // not prepended with the external Hackathon API host.
+  // Local static files and models must always be loaded relatively from the website origin (same-origin).
   if (relativeUrl.startsWith('/images/amina-stitches/') || relativeUrl.startsWith('/models/')) {
     return relativeUrl
   }

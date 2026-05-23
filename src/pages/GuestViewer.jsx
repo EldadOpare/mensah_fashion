@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import GuestLayout from '../components/layout/GuestLayout'
 import PageTransition from '../components/ui/PageTransition'
+import MensahLoader from '../components/ui/MensahLoader'
 import GarmentViewer from '../components/viewer/GarmentViewer'
 import PhotoGallery from '../components/viewer/PhotoGallery'
 import SwatchSwitcher from '../components/viewer/SwatchSwitcher'
@@ -30,6 +31,7 @@ export default function GuestViewer() {
   }, [id])
 
   const fetchItem = async () => {
+    const startTime = Date.now()
     try {
       const data = await getItem(id)
       const garment = mapItemToGarment(data)
@@ -40,7 +42,11 @@ export default function GuestViewer() {
     } catch (err) {
       console.warn('Item fetch failed', err)
     } finally {
-      setLoading(false)
+      const elapsed = Date.now() - startTime
+      const remaining = Math.max(1800 - elapsed, 0)
+      setTimeout(() => {
+        setLoading(false)
+      }, remaining)
     }
   }
 
@@ -67,20 +73,7 @@ export default function GuestViewer() {
   const imageUrls = (item?.image_urls || []).map(toAbsoluteUrl)
 
   if (loading) {
-    return (
-      <GuestLayout>
-        <div style={{ maxWidth: '1440px', margin: '0 auto', padding: 'var(--space-6)', display: 'grid', gridTemplateColumns: '1fr 400px', gap: 'var(--space-8)' }}>
-          <div className="skeleton" style={{ height: '620px', borderRadius: 'var(--radius-md)' }} />
-          <div>
-            <div className="skeleton" style={{ height: '14px', width: '100px', marginBottom: 'var(--space-3)' }} />
-            <div className="skeleton" style={{ height: '48px', width: '80%', marginBottom: 'var(--space-4)' }} />
-            <div className="skeleton" style={{ height: '28px', width: '120px', marginBottom: 'var(--space-5)' }} />
-            <div className="skeleton" style={{ height: '80px', marginBottom: 'var(--space-6)' }} />
-            <div className="skeleton" style={{ height: '52px' }} />
-          </div>
-        </div>
-      </GuestLayout>
-    )
+    return <MensahLoader />
   }
 
   if (!item) {

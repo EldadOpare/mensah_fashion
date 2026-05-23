@@ -211,8 +211,8 @@ const customItems = [
     name: 'Royal Kente Kaftan',
     price_minor: 85000,
     currency: 'GHS',
-    image_urls: ['/images/amina-stitches/as-dress-kente.jpg'],
-    in_stock: true,
+    image_urls: ['/images/amina-stitches/kente.jpg'],
+    in_stock: true, // IN STOCK dummy item for checkout demo!
     displayMode: '3d',
     garmentId: 'kaftan',
     published: true,
@@ -223,8 +223,8 @@ const customItems = [
     name: 'Modern Ankara Blazer',
     price_minor: 62000,
     currency: 'GHS',
-    image_urls: ['/images/amina-stitches/as-dress-ankara.jpg'],
-    in_stock: true,
+    image_urls: ['/images/amina-stitches/blazer.jpg'],
+    in_stock: false, // SOLD OUT
     displayMode: '3d',
     garmentId: 'business_suit',
     published: true,
@@ -251,11 +251,11 @@ app.get('/api/items', async (req, res) => {
     
     // Format external items to ensure standard shape and apply overrides
     const formattedExt = extItems.map(item => {
-      // Default to true (in stock) if not explicitly overridden, ensuring customer checkout is functional out of the box!
-      const stock = stockOverrides[item.id] !== undefined ? stockOverrides[item.id] : true
+      // All external pre-seeded garments are SOLD OUT by default for checkout demo!
+      const stock = stockOverrides[item.id] !== undefined ? stockOverrides[item.id] : false
       const visible = visibilityOverrides[item.id] !== undefined ? visibilityOverrides[item.id] : true
       
-      // Map placeholder images to high-quality uploaded assets so they display beautifully!
+      // Override placeholders for all 20 items to point to high-quality local assets!
       let mappedUrls = item.image_urls || []
       const imageMap = {
         'as-dress-ankara': '/images/amina-stitches/ankara.webp',
