@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import GuestLayout from '../components/layout/GuestLayout'
 import { getBasket, getBasketOrder, payOrder } from '../api/merchantApi'
-import { formatPrice, toAbsoluteUrl, WHATSAPP_NUMBER } from '../config/apiConfig'
+import { formatPrice, toAbsoluteUrl, WHATSAPP_NUMBER, getItemLocalImage } from '../config/apiConfig'
 
 function buildWhatsAppText(basket, localOrder) {
   const isPaid = localOrder?.payment_status === 'paid'
@@ -221,13 +221,18 @@ export default function BasketConfirmation() {
                 <div style={{ padding: 'var(--space-5)' }}>
                   {basket.items?.map(item => (
                     <div key={item.item_id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
-                      {item.image_url && (
-                        <img
-                          src={toAbsoluteUrl(item.image_url)}
-                          alt={item.name}
-                          style={{ width: 48, height: 60, objectFit: 'cover', borderRadius: 'var(--radius-xs)', flexShrink: 0 }}
-                        />
-                      )}
+                      {(() => {
+                        const resolvedImage = getItemLocalImage(item.item_id, item.image_url);
+                        return resolvedImage ? (
+                          <img
+                            src={toAbsoluteUrl(resolvedImage)}
+                            alt={item.name}
+                            style={{ width: 48, height: 60, objectFit: 'cover', borderRadius: 'var(--radius-xs)', flexShrink: 0 }}
+                          />
+                        ) : (
+                          <div style={{ width: 48, height: 60, background: 'var(--bg-surface)', borderRadius: 'var(--radius-xs)', flexShrink: 0 }} />
+                        )
+                      })()}
                       <div style={{ flex: 1 }}>
                         <p style={{ fontFamily: 'var(--font-editorial)', fontSize: 'var(--text-base)', marginBottom: '2px' }}>{item.name}</p>
                         <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>Qty: {item.qty}</p>

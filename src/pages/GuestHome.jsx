@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import GuestLayout from '../components/layout/GuestLayout'
 import RunwayHero from '../components/hero/RunwayHero'
@@ -83,12 +83,28 @@ function deriveCategories(items) {
   return rules.map(r => ({ label: r.label, count: items.filter(r.match).length })).filter(c => c.count > 0)
 }
 
+const CATEGORY_SLIDES = [
+  { img: '/images/amina-stitches/blouse.avif', name: 'Blouses & Tops' },
+  { img: '/images/amina-stitches/2_peice.webp', name: 'Sets & Coords' },
+  { img: '/images/amina-stitches/cover_up.webp', name: 'Kimono & Coverups' },
+  { img: '/images/amina-stitches/pencil.avif', name: 'Pencil Skirts' },
+  { img: '/images/amina-stitches/tote_bag.avif', name: 'Luxury Accessories' },
+]
+
 export default function GuestHome() {
   const [items, setItems] = useState([])
   const [campaigns, setCampaigns] = useState([])
   const [loading, setLoading] = useState(true)
   const [usingFallback, setUsingFallback] = useState(false)
   const [filter, setFilter] = useState('all')
+  const [catSlide, setCatSlide] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCatSlide(prev => (prev + 1) % CATEGORY_SLIDES.length)
+    }, 2800)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => { loadAll() }, [])
 
@@ -154,27 +170,48 @@ export default function GuestHome() {
             <section style={{ borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
               <div style={{ maxWidth: '1440px', margin: '0 auto', display: 'grid', gridTemplateColumns: '5fr 7fr', minHeight: '480px' }}>
 
-                {/* Left: featured item image + text */}
-                <div style={{ position: 'relative', overflow: 'hidden', borderRight: '1px solid var(--border-color)' }}>
-                  {featuredImg ? (
-                    <img
-                      src={featuredImg}
-                      alt={featuredItem?.name || ''}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: '480px' }}
-                      onError={e => { e.currentTarget.style.display = 'none' }}
+                {/* Left: slideshow + text */}
+                <div style={{ position: 'relative', overflow: 'hidden', borderRight: '1px solid var(--border-color)', minHeight: '480px', background: '#151311' }}>
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={catSlide}
+                      src={toAbsoluteUrl(CATEGORY_SLIDES[catSlide].img)}
+                      alt={CATEGORY_SLIDES[catSlide].name}
+                      initial={{ opacity: 0, scale: 1.02 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.55, ease: 'easeInOut' }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', position: 'absolute', inset: 0 }}
                     />
-                  ) : (
-                    <div style={{ width: '100%', minHeight: '480px', background: 'var(--bg-surface)' }} />
-                  )}
+                  </AnimatePresence>
+                  
+                  {/* Heavy dark gradient overlay for text readability */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(15,12,10,0.85) 0%, rgba(15,12,10,0.1) 60%, rgba(15,12,10,0.3) 100%)',
+                    zIndex: 2
+                  }} />
+
                   {/* Overlay text */}
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 'var(--space-6)', background: 'linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 100%)' }}>
-                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.65, maxWidth: '300px', marginBottom: 'var(--space-4)' }}>
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 'var(--space-6)', zIndex: 3 }}>
+                    <p style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.65, maxWidth: '300px', marginBottom: 'var(--space-4)' }}>
                       Every piece carries rhythm beyond clothing — its motion and meaning, where West African craft meets the moment.
                     </p>
                     <button
                       onClick={() => document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })}
                       className="secondary"
-                      style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '9px 20px', borderRadius: 'var(--radius-full)' }}
+                      style={{
+                        fontSize: '11px',
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                        padding: '9px 20px',
+                        borderRadius: 'var(--radius-full)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: '#FFFFFF',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        cursor: 'pointer'
+                      }}
                     >
                       See Collection →
                     </button>

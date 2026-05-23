@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../../context/CartContext'
 import CheckoutForm from './CheckoutForm'
-import { formatPrice } from '../../config/apiConfig'
+import { formatPrice, toAbsoluteUrl, getItemLocalImage } from '../../config/apiConfig'
 
 function QtyControl({ qty, onDecrement, onIncrement }) {
   return (
@@ -114,11 +114,14 @@ export default function CartDrawer({ isOpen, onClose }) {
                       <div key={item.item_id} style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
                         {/* Thumbnail */}
                         <div style={{ width: 72, height: 90, borderRadius: 'var(--radius-sm)', overflow: 'hidden', background: 'var(--bg-surface)', flexShrink: 0 }}>
-                          {item.image_url ? (
-                            <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <div style={{ width: '100%', height: '100%', background: 'var(--bg-surface)' }} />
-                          )}
+                          {(() => {
+                            const img = getItemLocalImage(item.item_id, item.image_url);
+                            return img ? (
+                              <img src={toAbsoluteUrl(img)} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', background: 'var(--bg-surface)' }} />
+                            );
+                          })()}
                         </div>
 
                         {/* Details */}
