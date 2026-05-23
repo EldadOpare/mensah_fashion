@@ -23,7 +23,7 @@ export default function App() {
     setRouteLoading(true)
     const t = setTimeout(() => {
       setRouteLoading(false)
-    }, 1500) // Premium brand transition timing
+    }, 1800) // Premium brand transition timing (1.8s)
     return () => clearTimeout(t)
   }, [location.pathname])
 

@@ -31,7 +31,6 @@ export default function GuestViewer() {
   }, [id])
 
   const fetchItem = async () => {
-    const startTime = Date.now()
     try {
       const data = await getItem(id)
       const garment = mapItemToGarment(data)
@@ -42,11 +41,7 @@ export default function GuestViewer() {
     } catch (err) {
       console.warn('Item fetch failed', err)
     } finally {
-      const elapsed = Date.now() - startTime
-      const remaining = Math.max(1800 - elapsed, 0)
-      setTimeout(() => {
-        setLoading(false)
-      }, remaining)
+      setLoading(false)
     }
   }
 

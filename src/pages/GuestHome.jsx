@@ -93,7 +93,6 @@ export default function GuestHome() {
   useEffect(() => { loadAll() }, [])
 
   async function loadAll() {
-    const startTime = Date.now()
     try {
       const [rawItems, campaignData] = await Promise.allSettled([
         getItems(),
@@ -109,11 +108,7 @@ export default function GuestHome() {
 
       if (campaignData.status === 'fulfilled') setCampaigns(campaignData.value)
     } finally {
-      const elapsed = Date.now() - startTime
-      const remaining = Math.max(1800 - elapsed, 0)
-      setTimeout(() => {
-        setLoading(false)
-      }, remaining)
+      setLoading(false)
     }
   }
 
