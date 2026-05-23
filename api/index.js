@@ -236,6 +236,47 @@ let customItemSeq = 3
 const stockOverrides = {}       // Map of itemId -> boolean
 const visibilityOverrides = {}  // Map of itemId -> boolean
 
+const imageMap = {
+  'as-dress-ankara': '/images/amina-stitches/ankara.webp',
+  'as-dress-kente': '/images/amina-stitches/kente.jpg',
+  'as-skirt-pencil': '/images/amina-stitches/pencil.avif',
+  'as-skirt-maxi': '/images/amina-stitches/ankara.webp',
+  'as-top-peplum': '/images/amina-stitches/blouse.avif',
+  'as-bag-tote': '/images/amina-stitches/tote_bag.avif',
+  'as-blazer-print': '/images/amina-stitches/blazer.jpg',
+  'as-coord-set': '/images/amina-stitches/2_peice.webp',
+  'as-kimono-cover': '/images/amina-stitches/cover_up.webp',
+  'as-wrap-dress': '/images/amina-stitches/2_peice.webp',
+  'as-gown-wedding': '/images/amina-stitches/kente.jpg',
+  'as-eid-dress': '/images/amina-stitches/ankara.webp',
+  'as-child-dress': '/images/amina-stitches/ankara.webp',
+  'as-jumpsuit-wide': '/images/amina-stitches/2_peice.webp',
+  'as-shorts-high': '/images/amina-stitches/pencil.avif',
+  'as-top-crop': '/images/amina-stitches/blouse.avif',
+  'as-headwrap-set': '/images/amina-stitches/pencil.avif',
+  'as-mask-set': '/images/amina-stitches/pencil.avif',
+  'as-earrings-fabric': '/images/amina-stitches/pencil.avif',
+  'as-scrunchie-pack': '/images/amina-stitches/pencil.avif',
+}
+
+function formatExternalItem(item) {
+  const stock = stockOverrides[item.id] !== undefined ? stockOverrides[item.id] : false
+  const visible = visibilityOverrides[item.id] !== undefined ? visibilityOverrides[item.id] : true
+  
+  let mappedUrls = item.image_urls || []
+  const mapped = imageMap[item.id]
+  if (mapped) {
+    mappedUrls = [mapped]
+  }
+  
+  return {
+    ...item,
+    in_stock: stock,
+    published: visible,
+    image_urls: mappedUrls,
+  }
+}
+
 // GET /api/items  —  unified catalogue (public)
 app.get('/api/items', async (req, res) => {
   try {
@@ -250,47 +291,7 @@ app.get('/api/items', async (req, res) => {
     }
     
     // Format external items to ensure standard shape and apply overrides
-    const formattedExt = extItems.map(item => {
-      // All external pre-seeded garments are SOLD OUT by default for checkout demo!
-      const stock = stockOverrides[item.id] !== undefined ? stockOverrides[item.id] : false
-      const visible = visibilityOverrides[item.id] !== undefined ? visibilityOverrides[item.id] : true
-      
-      // Override placeholders for all 20 items to point to high-quality local assets!
-      let mappedUrls = item.image_urls || []
-      const imageMap = {
-        'as-dress-ankara': '/images/amina-stitches/ankara.webp',
-        'as-dress-kente': '/images/amina-stitches/kente.jpg',
-        'as-skirt-pencil': '/images/amina-stitches/pencil.avif',
-        'as-skirt-maxi': '/images/amina-stitches/ankara.webp',
-        'as-top-peplum': '/images/amina-stitches/blouse.avif',
-        'as-bag-tote': '/images/amina-stitches/tote_bag.avif',
-        'as-blazer-print': '/images/amina-stitches/blazer.jpg',
-        'as-coord-set': '/images/amina-stitches/2_peice.webp',
-        'as-kimono-cover': '/images/amina-stitches/cover_up.webp',
-        'as-wrap-dress': '/images/amina-stitches/2_peice.webp',
-        'as-gown-wedding': '/images/amina-stitches/kente.jpg',
-        'as-eid-dress': '/images/amina-stitches/ankara.webp',
-        'as-child-dress': '/images/amina-stitches/ankara.webp',
-        'as-jumpsuit-wide': '/images/amina-stitches/2_peice.webp',
-        'as-shorts-high': '/images/amina-stitches/pencil.avif',
-        'as-top-crop': '/images/amina-stitches/blouse.avif',
-        'as-headwrap-set': '/images/amina-stitches/pencil.avif',
-        'as-mask-set': '/images/amina-stitches/pencil.avif',
-        'as-earrings-fabric': '/images/amina-stitches/pencil.avif',
-        'as-scrunchie-pack': '/images/amina-stitches/pencil.avif',
-      }
-      const mapped = imageMap[item.id]
-      if (mapped) {
-        mappedUrls = [mapped]
-      }
-      
-      return {
-        ...item,
-        in_stock: stock,
-        published: visible,
-        image_urls: mappedUrls,
-      }
-    })
+    const formattedExt = extItems.map(formatExternalItem)
     
     // Merge custom items
     const merged = [...customItems, ...formattedExt]
@@ -394,14 +395,9 @@ app.get('/api/items/:id', async (req, res) => {
       return res.status(extRes.status).json({ error: 'Item not found in external registry' })
     }
     const item = await extRes.json()
-    const stock = stockOverrides[item.id] !== undefined ? stockOverrides[item.id] : true
-    const visible = visibilityOverrides[item.id] !== undefined ? visibilityOverrides[item.id] : true
+    const formatted = formatExternalItem(item)
     
-    return res.json({
-      ...item,
-      in_stock: stock,
-      published: visible,
-    })
+    return res.json(formatted)
   } catch (err) {
     console.error('Failed to retrieve item details:', err)
     return res.status(500).json({ error: 'Failed to retrieve item details' })

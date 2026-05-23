@@ -26,13 +26,18 @@ export default function MensahLoader() {
   }
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0,
-      background: '#FAF9F6', // Luxury off-white ivory background
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      zIndex: 9999,
-    }}>
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+      style={{
+        position: 'fixed', inset: 0,
+        background: '#FAF9F6', // Luxury off-white ivory background
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        zIndex: 9999,
+      }}
+    >
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -89,6 +94,6 @@ export default function MensahLoader() {
       >
         Bespoke West African Craft
       </motion.p>
-    </div>
+    </motion.div>
   )
 }

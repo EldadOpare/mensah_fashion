@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import MensahLoader from './components/ui/MensahLoader'
@@ -17,9 +17,21 @@ const TailorAnalytics     = lazy(() => import('./pages/TailorAnalytics'))
 
 export default function App() {
   const location = useLocation()
+  const [routeLoading, setRouteLoading] = useState(true)
+
+  useEffect(() => {
+    setRouteLoading(true)
+    const t = setTimeout(() => {
+      setRouteLoading(false)
+    }, 1500) // Premium brand transition timing
+    return () => clearTimeout(t)
+  }, [location.pathname])
 
   return (
     <Suspense fallback={<MensahLoader />}>
+      <AnimatePresence mode="wait">
+        {routeLoading && <MensahLoader key="route-loader" />}
+      </AnimatePresence>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* Guest */}
