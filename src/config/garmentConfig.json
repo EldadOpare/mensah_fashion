@@ -1,0 +1,10 @@
+{
+  "kaftan":             { "repeatX": 2, "repeatY": 3, "wrapS": "RepeatWrapping",      "wrapT": "RepeatWrapping",      "label": "Kaftan" },
+  "business_suit":      { "repeatX": 1, "repeatY": 1, "wrapS": "ClampToEdgeWrapping", "wrapT": "ClampToEdgeWrapping", "label": "Business Suit" },
+  "jeans_baggy":        { "repeatX": 1, "repeatY": 2, "wrapS": "RepeatWrapping",      "wrapT": "RepeatWrapping",      "label": "Baggy Jeans" },
+  "shirt_long":         { "repeatX": 1, "repeatY": 1, "wrapS": "ClampToEdgeWrapping", "wrapT": "ClampToEdgeWrapping", "label": "Long Shirt" },
+  "shirt_skirt_outfit": { "repeatX": 1, "repeatY": 2, "wrapS": "RepeatWrapping",      "wrapT": "RepeatWrapping",      "label": "Shirt & Skirt Set" },
+  "shirt_vintage":      { "repeatX": 1, "repeatY": 1, "wrapS": "ClampToEdgeWrapping", "wrapT": "ClampToEdgeWrapping", "label": "Vintage Shirt" },
+  "skirt_medieval":     { "repeatX": 2, "repeatY": 2, "wrapS": "RepeatWrapping",      "wrapT": "RepeatWrapping",      "label": "Wrap Skirt" },
+  "waistcoat":          { "repeatX": 1, "repeatY": 1, "wrapS": "ClampToEdgeWrapping", "wrapT": "ClampToEdgeWrapping", "label": "Waistcoat" }
+}

@@ -1,0 +1,281 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+.hero{
+  position:relative;height:600px;background:#09080a;
+  overflow:hidden;display:flex;flex-direction:column;align-items:center;
+  font-family:'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',sans-serif;
+}
+.rwy{position:absolute;bottom:0;left:0;right:0;height:55%;pointer-events:none;z-index:1}
+.stage{position:absolute;bottom:0;left:0;right:0;height:100%;z-index:2}
+.fw{
+  position:absolute;left:50%;bottom:0;
+  transform-origin:bottom center;
+  animation:rw 9s cubic-bezier(.37,.0,.63,1) infinite;
+  opacity:0;z-index:1;
+}
+.fw:nth-child(1){animation-delay:0s}
+.fw:nth-child(2){animation-delay:3s}
+.fw:nth-child(3){animation-delay:6s}
+.fb{animation:bob .52s ease-in-out infinite alternate;transform-origin:bottom center}
+@keyframes rw{
+  0%{transform:translateX(-50%) translateY(-265px) scale(.13);opacity:0}
+  9%{opacity:.7}
+  43%{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
+  48%{transform:translateX(-50%) translateY(-7px) scale(1.025) rotate(-1.6deg);opacity:1}
+  54%{transform:translateX(-50%) translateY(-7px) scale(1.025) rotate(1.6deg);opacity:1}
+  60%{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
+  74%{transform:translateX(calc(-50% - 180px)) translateY(0) scale(.72);opacity:.45}
+  84%{transform:translateX(calc(-50% - 380px)) translateY(0) scale(.38);opacity:0}
+  100%{transform:translateX(calc(-50% - 380px)) translateY(0) scale(.38);opacity:0}
+}
+@keyframes bob{from{transform:translateY(0) rotate(-.45deg)}to{transform:translateY(-4px) rotate(.45deg)}}
+.hd{
+  position:relative;z-index:20;text-align:center;
+  padding-top:5.5vh;pointer-events:none;
+}
+.brand{
+  font-size:.6rem;letter-spacing:.65em;color:#b8946a;
+  text-transform:uppercase;margin-bottom:.8rem;font-weight:400;
+}
+.htitle{
+  font-family:'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  font-size:clamp(2.9rem,7.5vw,5.4rem);font-weight:400;
+  color:#edeae2;line-height:.86;letter-spacing:-.01em;
+}
+.htitle em{font-style:italic;color:#c9a87a}
+.hsub{
+  font-size:.56rem;letter-spacing:.5em;color:#38332e;
+  text-transform:uppercase;margin-top:1.1rem;font-weight:400;
+}
+.oi{
+  position:absolute;z-index:20;top:44%;right:7%;
+  text-align:right;transition:opacity .45s ease,transform .45s ease;
+}
+.oin{
+  font-family:'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  font-size:.95rem;font-weight:400;color:#edeae2;
+  letter-spacing:.06em;margin-bottom:.35rem;font-style:italic;
+}
+.oip{font-size:.58rem;letter-spacing:.38em;color:#b8946a;font-weight:400}
+.sideline{
+  position:absolute;right:calc(7% + 115px);top:44%;z-index:20;
+  width:1px;height:36px;background:#2a2520;
+}
+.ctr{
+  position:absolute;z-index:20;left:7%;top:48%;
+  transform:translateY(-50%);display:flex;flex-direction:column;
+  align-items:center;gap:.45rem;
+}
+.cnum{
+  font-family:'Palatino Linotype',Georgia,serif;
+  font-size:.88rem;font-weight:400;color:#b8946a;
+  transition:opacity .35s;letter-spacing:.1em;
+}
+.cline{width:1px;height:38px;background:#252118}
+.ctot{font-size:.55rem;letter-spacing:.2em;color:#332e2a;font-weight:400}
+.cta{
+  position:absolute;bottom:5.5%;left:50%;transform:translateX(-50%);
+  z-index:20;display:flex;gap:2.2rem;align-items:center;
+}
+.cbtn{
+  font-family:'Gill Sans','Gill Sans MT',sans-serif;
+  font-size:.58rem;letter-spacing:.42em;text-transform:uppercase;
+  color:#09080a;background:#b8946a;border:none;
+  padding:.85rem 2.3rem;cursor:pointer;font-weight:400;
+  transition:background .22s;
+}
+.cbtn:hover{background:#c9a87a}
+.clink{
+  font-size:.56rem;letter-spacing:.42em;text-transform:uppercase;
+  color:#edeae2;text-decoration:none;border-bottom:1px solid #2f2a25;
+  padding-bottom:2px;font-weight:400;opacity:.8;
+}
+.floorline{
+  position:absolute;bottom:14.8%;left:0;right:0;height:1px;
+  background:#1d1a16;z-index:3;pointer-events:none;
+}
+.catstep{
+  position:absolute;bottom:6%;left:50%;transform:translateX(-50%);
+  z-index:20;display:flex;gap:8px;align-items:center;
+}
+.dot{width:5px;height:5px;background:#2a2520;transition:background .4s}
+.dot.active{background:#b8946a}
+</style>
+
+<h2 class="sr-only">Maison Éclat fashion runway hero — three spring couture 2025 looks showcased on an animated catwalk</h2>
+
+<div class="hero">
+
+<svg class="rwy" viewBox="0 0 900 330" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <polygon points="300,0 600,0 900,330 0,330" fill="#0f0d0b"/>
+  <line x1="450" y1="0" x2="0" y2="330" stroke="#1d1b17" stroke-width=".7"/>
+  <line x1="450" y1="0" x2="180" y2="330" stroke="#1c1a16" stroke-width=".7"/>
+  <line x1="450" y1="0" x2="360" y2="330" stroke="#1a1916" stroke-width=".6"/>
+  <line x1="450" y1="0" x2="450" y2="330" stroke="#1c1a16" stroke-width=".6" stroke-dasharray="3,8"/>
+  <line x1="450" y1="0" x2="540" y2="330" stroke="#1a1916" stroke-width=".6"/>
+  <line x1="450" y1="0" x2="720" y2="330" stroke="#1c1a16" stroke-width=".7"/>
+  <line x1="450" y1="0" x2="900" y2="330" stroke="#1d1b17" stroke-width=".7"/>
+  <line x1="300" y1="0" x2="0" y2="330" stroke="#28231e" stroke-width="1.1"/>
+  <line x1="600" y1="0" x2="900" y2="330" stroke="#28231e" stroke-width="1.1"/>
+  <polygon points="400,40 500,40 580,330 320,330" fill="rgba(185,152,100,.035)"/>
+  <ellipse cx="450" cy="327" rx="180" ry="9" fill="rgba(185,152,100,.13)"/>
+  <circle cx="28" cy="325" r="2.5" fill="#b8946a" opacity=".55"/>
+  <circle cx="110" cy="321" r="2" fill="#b8946a" opacity=".38"/>
+  <circle cx="195" cy="315" r="1.5" fill="#b8946a" opacity=".22"/>
+  <circle cx="265" cy="307" r="1.1" fill="#b8946a" opacity=".14"/>
+  <circle cx="872" cy="325" r="2.5" fill="#b8946a" opacity=".55"/>
+  <circle cx="790" cy="321" r="2" fill="#b8946a" opacity=".38"/>
+  <circle cx="705" cy="315" r="1.5" fill="#b8946a" opacity=".22"/>
+  <circle cx="635" cy="307" r="1.1" fill="#b8946a" opacity=".14"/>
+  <line x1="0" y1="329" x2="900" y2="329" stroke="#b8946a" stroke-width=".4" opacity=".28"/>
+</svg>
+
+<div class="floorline"></div>
+
+<div class="stage" id="stage">
+
+  <div class="fw" id="f0">
+    <div class="fb">
+      <svg width="92" height="280" viewBox="0 0 92 280" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="46" cy="24" rx="13" ry="11" fill="#1c1408"/>
+        <ellipse cx="46" cy="16" rx="9" ry="9" fill="#271c0e"/>
+        <ellipse cx="46" cy="40" rx="11.5" ry="13" fill="#c8906a"/>
+        <rect x="42" y="51" width="8" height="9" rx="2" fill="#c8906a"/>
+        <path d="M26,59 Q46,54 66,59 L69,108 Q46,106 23,108 Z" fill="#ede8dc"/>
+        <path d="M23,106 Q5,165 0,280 L92,280 Q87,165 69,106 Z" fill="#ede8dc"/>
+        <line x1="44" y1="108" x2="35" y2="250" stroke="rgba(255,255,255,0.1)" stroke-width="1.2"/>
+        <path d="M26,67 Q14,92 16,125" stroke="#c8906a" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+        <path d="M66,67 Q78,92 76,125" stroke="#c8906a" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+        <path d="M0,270 Q10,279 30,279 Q46,280 46,280 Q46,280 62,279 Q82,279 92,270" stroke="#ede8dc" stroke-width=".8" fill="none" opacity=".3"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="fw" id="f1">
+    <div class="fb">
+      <svg width="92" height="280" viewBox="0 0 92 280" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="46" cy="22" rx="17" ry="15" fill="#1c1208"/>
+        <ellipse cx="46" cy="19" rx="15" ry="17" fill="#231608"/>
+        <ellipse cx="46" cy="39" rx="11.5" ry="13" fill="#7a4a2e"/>
+        <rect x="42" y="50" width="8" height="9" rx="2" fill="#7a4a2e"/>
+        <path d="M22,57 L22,132 L70,132 L70,57 Q58,53 46,55 Q34,53 22,57Z" fill="#1d1814"/>
+        <path d="M46,57 L38,78 L30,57" fill="#26201b"/>
+        <path d="M46,57 L54,78 L62,57" fill="#26201b"/>
+        <path d="M38,78 L54,78 L53,132 L39,132Z" fill="#ede8dc" opacity=".82"/>
+        <path d="M22,130 L22,280 L46,280 L46,170 L46,280 L70,280 L70,130Z" fill="#242018"/>
+        <line x1="46" y1="130" x2="46" y2="280" stroke="#1c1814" stroke-width="1"/>
+        <circle cx="52" cy="73" r="1.6" fill="#b8946a"/>
+        <path d="M22,63 L12,132" stroke="#1d1814" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <path d="M70,63 L80,132" stroke="#1d1814" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <ellipse cx="12.5" cy="135" rx="5" ry="5.5" fill="#7a4a2e"/>
+        <ellipse cx="79.5" cy="135" rx="5" ry="5.5" fill="#7a4a2e"/>
+        <path d="M26,276 Q26,281 36,281 L45,281 L43,276Z" fill="#1a1410"/>
+        <path d="M47,276 Q47,281 57,281 L66,281 L64,276Z" fill="#1a1410"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="fw" id="f2">
+    <div class="fb">
+      <svg width="92" height="280" viewBox="0 0 92 280" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30,30 Q18,54 22,94 Q34,80 42,62" fill="#1a1208"/>
+        <ellipse cx="46" cy="22" rx="15" ry="18" fill="#261a0c"/>
+        <path d="M62,30 Q74,54 70,94 Q58,80 50,62" fill="#1a1208"/>
+        <ellipse cx="46" cy="39" rx="11.5" ry="13" fill="#e0b882"/>
+        <rect x="42" y="50" width="8" height="9" rx="2" fill="#e0b882"/>
+        <path d="M28,58 Q46,53 64,58 L67,114 Q46,118 25,114 Z" fill="#ede8dc"/>
+        <rect x="28" y="99" width="36" height="5" rx="2" fill="#b8946a"/>
+        <path d="M25,113 Q14,135 8,172 L84,172 Q78,135 67,113 Z" fill="#ede8dc"/>
+        <rect x="35" y="170" width="10" height="84" rx="5" fill="#e0b882"/>
+        <rect x="47" y="170" width="10" height="84" rx="5" fill="#e0b882"/>
+        <path d="M30,251 Q30,261 39,261 L45,261 L43,251Z" fill="#181410"/>
+        <path d="M47,251 Q47,261 56,261 L62,261 L60,251Z" fill="#181410"/>
+        <line x1="31" y1="261" x2="33" y2="274" stroke="#181410" stroke-width="2"/>
+        <line x1="48" y1="261" x2="50" y2="274" stroke="#181410" stroke-width="2"/>
+        <line x1="26" y1="274" x2="44" y2="274" stroke="#181410" stroke-width="2.5"/>
+        <line x1="45" y1="274" x2="63" y2="274" stroke="#181410" stroke-width="2.5"/>
+        <path d="M28,64 Q16,92 18,120" stroke="#e0b882" stroke-width="7.5" fill="none" stroke-linecap="round"/>
+        <path d="M64,64 Q76,92 74,120" stroke="#e0b882" stroke-width="7.5" fill="none" stroke-linecap="round"/>
+        <rect x="70" y="111" width="19" height="12" rx="3" fill="#b8946a"/>
+        <line x1="44" y1="114" x2="44" y2="170" stroke="rgba(180,170,158,.25)" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+</div>
+
+<div class="hd">
+  <p class="brand">Maison Éclat</p>
+  <h1 class="htitle">Spring<br><em>Couture</em><br>2025</h1>
+  <p class="hsub">The New Collection</p>
+</div>
+
+<div class="sideline"></div>
+<div class="oi" id="oi">
+  <p class="oin" id="oin">Robe Lumière</p>
+  <p class="oip" id="oip">€ 4,200</p>
+</div>
+
+<div class="ctr">
+  <span class="cnum" id="cnum">01</span>
+  <div class="cline"></div>
+  <span class="ctot">03</span>
+</div>
+
+<div class="cta">
+  <button class="cbtn">View Collection</button>
+  <a class="clink" href="#">Our Story</a>
+</div>
+
+<div class="catstep">
+  <div class="dot active" id="d0"></div>
+  <div class="dot" id="d1"></div>
+  <div class="dot" id="d2"></div>
+</div>
+
+</div>
+
+<script>
+var outfits=[
+  {name:'Robe Lumière',price:'€ 4,200'},
+  {name:'Le Tailleur',price:'€ 3,850'},
+  {name:'Minuit Doré',price:'€ 2,100'}
+];
+var cur=0;
+var oin=document.getElementById('oin');
+var oip=document.getElementById('oip');
+var cnum=document.getElementById('cnum');
+var oi=document.getElementById('oi');
+var figs=[document.getElementById('f0'),document.getElementById('f1'),document.getElementById('f2')];
+var dots=[document.getElementById('d0'),document.getElementById('d1'),document.getElementById('d2')];
+
+oi.style.transition='opacity .45s ease';
+cnum.style.transition='opacity .32s';
+
+function update(n,anim){
+  if(anim){
+    oi.style.opacity='0';
+    cnum.style.opacity='0';
+    setTimeout(function(){
+      oin.textContent=outfits[n].name;
+      oip.textContent=outfits[n].price;
+      cnum.textContent=String(n+1).padStart(2,'0');
+      oi.style.opacity='1';
+      cnum.style.opacity='1';
+    },400);
+  } else {
+    oin.textContent=outfits[n].name;
+    oip.textContent=outfits[n].price;
+    cnum.textContent=String(n+1).padStart(2,'0');
+  }
+  figs.forEach(function(f,i){ f.style.zIndex = i===n?'6':'1'; });
+  dots.forEach(function(d,i){ d.className='dot'+(i===n?' active':''); });
+}
+
+update(0,false);
+setInterval(function(){
+  cur=(cur+1)%3;
+  update(cur,true);
+},3000);
+</script>
