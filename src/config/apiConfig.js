@@ -8,6 +8,13 @@ export const WHATSAPP_NUMBER = '+233557654321'
 export function toAbsoluteUrl(relativeUrl) {
   if (!relativeUrl) return null
   if (relativeUrl.startsWith('http')) return relativeUrl
+  
+  // Local static files should be loaded relative to the website host (same-origin), 
+  // not prepended with the external Hackathon API host.
+  if (relativeUrl.startsWith('/images/amina-stitches/') || relativeUrl.startsWith('/models/')) {
+    return relativeUrl
+  }
+  
   return `${API_BASE}${relativeUrl}`
 }
 
